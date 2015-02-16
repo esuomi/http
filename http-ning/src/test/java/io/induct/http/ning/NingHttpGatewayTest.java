@@ -3,10 +3,12 @@ package io.induct.http.ning;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import io.induct.http.Response;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class NingHttpGatewayTest {
 
+    @Ignore("have to figure out tests...")
     @Test
     public void juuh() throws Exception {
         try (NingHttpGateway ning = new NingHttpGateway()) {
