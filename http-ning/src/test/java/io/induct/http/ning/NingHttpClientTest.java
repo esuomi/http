@@ -6,12 +6,12 @@ import io.induct.http.Response;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class NingHttpGatewayTest {
+public class NingHttpClientTest {
 
     @Ignore("have to figure out tests...")
     @Test
     public void juuh() throws Exception {
-        try (NingHttpGateway ning = new NingHttpGateway()) {
+        try (NingHttpClient ning = new NingHttpClient()) {
             Multimap<String, String> empty = HashMultimap.create();
             try (Response response = ning.get("http://www.google.com", empty, empty, null)) {
                 System.out.println("status   = " + response.getStatusCode());

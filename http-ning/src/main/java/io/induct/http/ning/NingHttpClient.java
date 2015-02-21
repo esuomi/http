@@ -2,7 +2,7 @@ package io.induct.http.ning;
 
 import com.google.common.collect.Multimap;
 import com.ning.http.client.AsyncHttpClient;
-import io.induct.http.HttpGateway;
+import io.induct.http.HttpClient;
 import io.induct.http.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,13 +14,13 @@ import java.util.Map;
  * @author Esko Suomi <suomi.esko@gmail.com>
  * @since 15.2.2015
  */
-public class NingHttpGateway implements HttpGateway, AutoCloseable {
+public class NingHttpClient implements HttpClient, AutoCloseable {
 
-    private final Logger log = LoggerFactory.getLogger(NingHttpGateway.class);
+    private final Logger log = LoggerFactory.getLogger(NingHttpClient.class);
 
     private final AsyncHttpClient client;
 
-    public NingHttpGateway() {
+    public NingHttpClient() {
         this.client = new AsyncHttpClient();
     }
 
