@@ -16,7 +16,7 @@ public class NingHttpClientTest {
             try (Response response = ning.get("http://www.google.com", empty, empty, null)) {
                 System.out.println("status   = " + response.getStatusCode());
                 System.out.println("headers  = " + response.getResponseHeaders());
-                System.out.println("body     = " + new String(response.getResponseBody()));
+                //System.out.println("body     = " + new String(response.getResponseBody()));
             }
         }
     }

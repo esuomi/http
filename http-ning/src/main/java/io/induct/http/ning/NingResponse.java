@@ -1,8 +1,12 @@
 package io.induct.http.ning;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
-import com.ning.http.client.*;
+import com.ning.http.client.AsyncHandler;
+import com.ning.http.client.HttpResponseBodyPart;
+import com.ning.http.client.HttpResponseHeaders;
+import com.ning.http.client.HttpResponseStatus;
 import io.induct.http.HttpException;
 import io.induct.http.Response;
 import io.induct.util.concurrent.SyncValue;
@@ -88,9 +92,14 @@ public class NingResponse implements Response, AsyncHandler<String> {
     }
 
     @Override
-    public byte[] getResponseBody() {
+    public Optional<byte[]> getResponseBody() {
         allowHeaderReading();
-        return body.get();
+        byte[] content = body.get();
+        if (content == null) {
+            return Optional.absent();
+        } else {
+            return Optional.of(content);
+        }
     }
 
     @Override

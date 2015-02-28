@@ -3,6 +3,7 @@ package io.induct.http.ning;
 import com.google.common.collect.Multimap;
 import com.ning.http.client.AsyncHttpClient;
 import io.induct.http.HttpClient;
+import io.induct.http.HttpException;
 import io.induct.http.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,48 +28,76 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
     @Override
     public Response options(String url, Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody) {
         log.debug("HTTP OPTIONS {}", url);
-        return request(params, requestBody, client.prepareOptions(url));
+        try {
+            return request(params, headers, requestBody, client.prepareOptions(url));
+        } catch (NullPointerException npe) {
+            throw new HttpException("HTTP OPTIONS failed", npe);
+        }
     }
 
     @Override
     public Response get(String url, Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody) {
         log.debug("HTTP GET {}", url);
-        return request(params, requestBody, client.prepareGet(url));
+        try {
+            return request(params, headers, requestBody, client.prepareGet(url));
+        } catch (NullPointerException npe) {
+            throw new HttpException("HTTP GET failed", npe);
+        }
     }
 
     @Override
     public Response head(String url, Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody) {
         log.debug("HTTP HEAD {}", url);
-        return request(params, requestBody, client.prepareHead(url));
+        try {
+            return request(params, headers, requestBody, client.prepareHead(url));
+        } catch (NullPointerException npe) {
+            throw new HttpException("HTTP HEAD failed", npe);
+        }
     }
 
     @Override
     public Response post(String url, Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody) {
         log.debug("HTTP POST {}", url);
-        return request(params, requestBody, client.preparePost(url));
+        try {
+            return request(params, headers, requestBody, client.preparePost(url));
+        } catch (NullPointerException npe) {
+            throw new HttpException("HTTP POST failed", npe);
+        }
     }
 
     @Override
     public Response put(String url, Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody) {
         log.debug("HTTP PUT {}", url);
-        return request(params, requestBody, client.preparePut(url));
-    }
+        try {
+            return request(params, headers, requestBody, client.preparePut(url));
+        } catch (NullPointerException npe) {
+            throw new HttpException("HTTP PUT failed", npe);
+        }
+}
 
     @Override
     public Response delete(String url, Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody) {
         log.debug("HTTP DELETE {}", url);
-        return request(params, requestBody, client.prepareDelete(url));
-    }
+        try {
+            return request(params, headers, requestBody, client.prepareDelete(url));
+        } catch (NullPointerException npe) {
+            throw new HttpException("HTTP DELETE failed", npe);
+        }
+}
 
     @Override
     public Response connect(String url, Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody) {
         log.debug("HTTP CONNECT {}", url);
-        return request(params, requestBody, client.prepareConnect(url));
+        try {
+            return request(params, headers, requestBody, client.prepareConnect(url));
+        } catch (NullPointerException npe) {
+            throw new HttpException("HTTP CONNECT failed", npe);
+        }
     }
 
-    private Response request(Multimap<String, String> params, byte[] requestBody, AsyncHttpClient.BoundRequestBuilder request) {
+    private Response request(Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody, AsyncHttpClient.BoundRequestBuilder request) {
         contributeQueryParams(request, params);
-        contributeHeaders(request, params);
+        contributeHeaders(request, headers);
         if (requestBody != null) {
             log.debug("\t---");
             log.debug("\trequest body: {} bytes", requestBody.length);
