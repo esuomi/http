@@ -89,8 +89,7 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
         contributeQueryParams(request, params);
         contributeHeaders(request, headers);
         if (requestBody != null) {
-            log.debug("\t---");
-            log.debug("\trequest body: {} bytes", requestBody.length);
+            log.debug("\t\trequest body: {} bytes", requestBody.length);
             request.setBody(requestBody);
         }
         NingResponse ningResponse = new NingResponse();
@@ -99,19 +98,9 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
     }
 
     private void contributeQueryParams(AsyncHttpClient.BoundRequestBuilder request, Multimap<String, String> params) {
+        log.debug("\t\tparams: {}", params);
         for (Map.Entry<String, Collection<String>> param : params.asMap().entrySet()) {
-            boolean first = true;
             for (String value : param.getValue()) {
-                if (log.isDebugEnabled()) {
-                    String delim;
-                    if (first) {
-                        delim = "?";
-                        first = false;
-                    } else {
-                        delim = "&";
-                    }
-                    log.debug("\t{}{}={}", delim, param.getKey(), value);
-                }
                 request.addQueryParam(param.getKey(), value);
             }
         }
@@ -121,7 +110,7 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
         for (Map.Entry<String, Collection<String>> header : headers.asMap().entrySet()) {
             String name = header.getKey();
             for (String value : header.getValue()) {
-                log.debug("\trequest header >> {}:{}", name, value);
+                log.debug("\t\trequest header >> {}:{}", name, value);
                 request.addHeader(name, value);
             }
         }
