@@ -83,14 +83,16 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
         for (Map.Entry<String, Collection<String>> param : params.asMap().entrySet()) {
             boolean first = true;
             for (String value : param.getValue()) {
-                String delim;
-                if (first) {
-                    delim = "?";
-                    first = false;
-                } else {
-                    delim = "&";
+                if (log.isDebugEnabled()) {
+                    String delim;
+                    if (first) {
+                        delim = "?";
+                        first = false;
+                    } else {
+                        delim = "&";
+                    }
+                    log.debug("\t{}{}={}", delim, param.getKey(), value);
                 }
-                log.debug("\t{}{}={}", delim, param.getKey(), value);
                 request.addQueryParam(param.getKey(), value);
             }
         }
