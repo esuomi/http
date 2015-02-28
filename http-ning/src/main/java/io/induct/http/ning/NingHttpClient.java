@@ -83,16 +83,6 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
         } catch (NullPointerException npe) {
             throw new HttpException("HTTP DELETE failed", npe);
         }
-}
-
-    @Override
-    public Response connect(String url, Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody) {
-        log.debug("HTTP CONNECT {}", url);
-        try {
-            return request(params, headers, requestBody, client.prepareConnect(url));
-        } catch (NullPointerException npe) {
-            throw new HttpException("HTTP CONNECT failed", npe);
-        }
     }
 
     private Response request(Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody, AsyncHttpClient.BoundRequestBuilder request) {

@@ -19,7 +19,8 @@ public class EchoHandler implements HttpHandler {
 
     private final Logger log = LoggerFactory.getLogger(EchoHandler.class);
 
-    private final static HttpString X_ECHO_HEADER = HttpString.tryFromString("X-Echo");
+    public final static HttpString X_ECHO_HEADER = HttpString.tryFromString("X-Echo-Header");
+    public final static HttpString X_ECHO_PARAM = HttpString.tryFromString("X-Echo-Param");
 
     @Override
     public void handleRequest(HttpServerExchange exchange) throws Exception {
@@ -34,6 +35,7 @@ public class EchoHandler implements HttpHandler {
     private void transferEchoHeader(HttpServerExchange exchange) {
         HeaderValues echoHeaderValues = exchange.getRequestHeaders().get(X_ECHO_HEADER);
         exchange.getResponseHeaders().addAll(X_ECHO_HEADER, echoHeaderValues);
+        exchange.getResponseHeaders().addAll(X_ECHO_PARAM, exchange.getQueryParameters().get("echo"));
     }
 
     private void transferEchoBody(HttpServerExchange exchange) {
