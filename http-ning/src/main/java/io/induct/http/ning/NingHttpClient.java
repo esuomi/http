@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * @author Esko Suomi <suomi.esko@gmail.com>
  * @since 15.2.2015
  */
 public class NingHttpClient implements HttpClient, AutoCloseable {
@@ -21,8 +20,8 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
 
     private final AsyncHttpClient client;
 
-    public NingHttpClient() {
-        this.client = new AsyncHttpClient();
+    public NingHttpClient(AsyncHttpClient client) {
+        this.client = client;
     }
 
     @Override
@@ -88,13 +87,8 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
     private Response request(Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody, AsyncHttpClient.BoundRequestBuilder request) {
         contributeQueryParams(request, params);
         contributeHeaders(request, headers);
-        if (requestBody != null) {
-            log.debug("\t\trequest body: {} bytes", requestBody.length);
-            request.setBody(requestBody);
-        }
-        NingResponse ningResponse = new NingResponse();
-        request.execute(ningResponse);
-        return ningResponse;
+        contributeRequestBody(request, requestBody);
+        return execute(request);
     }
 
     private void contributeQueryParams(AsyncHttpClient.BoundRequestBuilder request, Multimap<String, String> params) {
@@ -114,6 +108,19 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
                 request.addHeader(name, value);
             }
         }
+    }
+
+    private void contributeRequestBody(AsyncHttpClient.BoundRequestBuilder request, byte[] requestBody) {
+        if (requestBody != null) {
+            log.debug("\t\trequest body: {} bytes", requestBody.length);
+            request.setBody(requestBody);
+        }
+    }
+
+    private Response execute(AsyncHttpClient.BoundRequestBuilder request) {
+        NingResponse ningResponse = new NingResponse();
+        request.execute(ningResponse);
+        return ningResponse;
     }
 
     @Override

@@ -4,6 +4,8 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Multimap;
 
 /**
+ * Generic HTTP response wrapper.
+ *
  * @since 15.2.2015
  */
 public interface Response extends AutoCloseable {
