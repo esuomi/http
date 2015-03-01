@@ -8,19 +8,18 @@ import java.util.concurrent.CountDownLatch;
 /**
  * Async-to-sync value helper. Also can be considered to be a single-item blocking producer-consumer abstraction.
  *
- * @author Esko Suomi <suomi.esko@gmail.com>
  * @since 15.2.2015
  */
 public class SyncValue<V> {
 
     private V value;
 
-    private final CountDownLatch statusCodeLatch = new CountDownLatch(1);
+    private final CountDownLatch syncLatch = new CountDownLatch(1);
     private final Supplier<V> supplier = new Supplier<V>() {
         @Override
         public V get() {
             try {
-                statusCodeLatch.await();
+                syncLatch.await();
             } catch (InterruptedException e) {
                 throw new HttpException("Could not acquire value", e);
             }
@@ -32,7 +31,7 @@ public class SyncValue<V> {
         try {
             this.value = value;
         } finally {
-            statusCodeLatch.countDown();
+            syncLatch.countDown();
         }
     }
 
