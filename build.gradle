@@ -1,0 +1,27 @@
+subprojects {
+	apply plugin: 'java'
+
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
+	version = '0.1.0'
+
+	repositories {
+		mavenCentral()
+	}
+
+
+	apply from: file("${rootProject.projectDir}/cradle/library.gradle")
+}
+
+project(':http-ning') {
+    dependencies {
+        compile project(':http-core')
+    }
+}
+
+project(':http-integration-tests') {
+    dependencies {
+        compile project(':http-core')
+        compile project(':http-ning')
+    }
+}
