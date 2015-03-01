@@ -8,6 +8,7 @@ import io.induct.http.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
     }
 
     @Override
-    public Response options(String url, Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody) {
+    public Response options(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
         log.debug("HTTP OPTIONS {}", url);
         try {
             return request(params, headers, requestBody, client.prepareOptions(url));
@@ -35,7 +36,7 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
     }
 
     @Override
-    public Response get(String url, Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody) {
+    public Response get(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
         log.debug("HTTP GET {}", url);
         try {
             return request(params, headers, requestBody, client.prepareGet(url));
@@ -45,7 +46,7 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
     }
 
     @Override
-    public Response head(String url, Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody) {
+    public Response head(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
         log.debug("HTTP HEAD {}", url);
         try {
             return request(params, headers, requestBody, client.prepareHead(url));
@@ -55,7 +56,7 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
     }
 
     @Override
-    public Response post(String url, Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody) {
+    public Response post(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
         log.debug("HTTP POST {}", url);
         try {
             return request(params, headers, requestBody, client.preparePost(url));
@@ -65,7 +66,7 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
     }
 
     @Override
-    public Response put(String url, Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody) {
+    public Response put(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
         log.debug("HTTP PUT {}", url);
         try {
             return request(params, headers, requestBody, client.preparePut(url));
@@ -75,7 +76,7 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
 }
 
     @Override
-    public Response delete(String url, Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody) {
+    public Response delete(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
         log.debug("HTTP DELETE {}", url);
         try {
             return request(params, headers, requestBody, client.prepareDelete(url));
@@ -84,7 +85,7 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
         }
     }
 
-    private Response request(Multimap<String, String> params, Multimap<String, String> headers, byte[] requestBody, AsyncHttpClient.BoundRequestBuilder request) {
+    private Response request(Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody, AsyncHttpClient.BoundRequestBuilder request) {
         contributeQueryParams(request, params);
         contributeHeaders(request, headers);
         contributeRequestBody(request, requestBody);
@@ -110,9 +111,8 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
         }
     }
 
-    private void contributeRequestBody(AsyncHttpClient.BoundRequestBuilder request, byte[] requestBody) {
+    private void contributeRequestBody(AsyncHttpClient.BoundRequestBuilder request, InputStream requestBody) {
         if (requestBody != null) {
-            log.debug("\t\trequest body: {} bytes", requestBody.length);
             request.setBody(requestBody);
         }
     }
