@@ -1,5 +1,6 @@
 package io.induct.http.ning;
 
+import com.ning.http.client.AsyncHttpClient;
 import io.induct.http.IntegrationTests;
 
 /**
@@ -9,6 +10,7 @@ public class NingIntegrationTests extends IntegrationTests<NingHttpClient> {
 
     @Override
     protected NingHttpClient initializeHttpClient() {
-        return new NingHttpClient();
+        AsyncHttpClient ningClient = new AsyncHttpClient();
+        return new NingHttpClient(ningClient);
     }
 }

@@ -1,12 +1,16 @@
 package io.induct.http.ning;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.Multimaps;
 import com.ning.http.client.AsyncHandler;
 import com.ning.http.client.HttpResponseBodyPart;
 import com.ning.http.client.HttpResponseHeaders;
 import com.ning.http.client.HttpResponseStatus;
+import com.stackoverflow.guava.CaseInsensitiveForwardingMap;
 import io.induct.http.HttpException;
 import io.induct.http.Response;
 import io.induct.util.concurrent.SyncValue;
@@ -17,7 +21,6 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * @author Esko Suomi <suomi.esko@gmail.com>
  * @since 15.2.2015
  */
 public class NingResponse implements Response, AsyncHandler<String> {
@@ -63,13 +66,17 @@ public class NingResponse implements Response, AsyncHandler<String> {
     public STATE onHeadersReceived(HttpResponseHeaders headers) throws Exception {
         readHeaders.await();
         if (state != STATE.ABORT) {
-            Multimap<String, String> convertedHeaders = MultimapBuilder.hashKeys().arrayListValues().build();
+            Multimap<String, String> convertedHeaders = newCaseInsensitiveMultiMap();
             for (Map.Entry<String, List<String>> h : headers.getHeaders().entrySet()) {
                 convertedHeaders.putAll(h.getKey(), h.getValue());
             }
             this.headers.push(convertedHeaders);
         }
         return state;
+    }
+
+    private ListMultimap<String, String> newCaseInsensitiveMultiMap() {
+        return Multimaps.newListMultimap(new CaseInsensitiveForwardingMap<>(Maps.newHashMap()), Lists::newLinkedList);
     }
 
     @Override
