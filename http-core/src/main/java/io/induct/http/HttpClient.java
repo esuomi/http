@@ -14,7 +14,7 @@ import com.google.common.collect.Multimap;
  * The {@link io.induct.http.Response} interface is designed to allow implementations to halt processing of the incoming
  * response at any time.
  *
- * <code>TRACE</code> and <code>CONNECT</code> are omitted as they are not generally used for notmal HTTP interaction.
+ * <code>TRACE</code> and <code>CONNECT</code> are omitted as they are not generally used for normal HTTP interaction.
  *
  * @since 15.2.2015
  */
