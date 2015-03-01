@@ -11,7 +11,4 @@ HTTP implementation itself has allowed me to reuse integration tests as system t
 Gateway object. I have found this immensely valuable, not to mention getting a great visibility into the final call
 values just before they're sent to the underlying client.
 
-Additionally not the entire HTTP spec is supported, namely `TRACE` and `OPTIONS` support are not available as those two
-are used for debugging and proxying TCP connections which are not very useful in generic sense.
-
 So, this wrapper and its implementations are opinionated. Caveat emptor.
