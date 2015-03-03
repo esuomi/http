@@ -18,6 +18,8 @@ import com.stackoverflow.guava.CaseInsensitiveForwardingMap;
 import io.induct.http.HttpException;
 import io.induct.http.Response;
 import io.induct.util.concurrent.SyncValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -34,6 +36,8 @@ import java.util.concurrent.CountDownLatch;
  * @since 15.2.2015
  */
 public class NingResponse implements Response, AsyncHandler<String> {
+
+    private final Logger log = LoggerFactory.getLogger(NingResponse.class);
 
     private STATE state = STATE.CONTINUE;
 
@@ -80,8 +84,9 @@ public class NingResponse implements Response, AsyncHandler<String> {
     @Override
     public STATE onBodyPartReceived(HttpResponseBodyPart bodyPart) throws Exception {
         if (state != STATE.ABORT) {
-            bodyPart.getBodyByteBuffer();
-            responseBody.add(bodyPart.getBodyByteBuffer());
+            ByteBuffer part = bodyPart.getBodyByteBuffer();
+            responseBody.add(part);
+            log.trace("Received response body part of {} bytes", part.capacity());
         }
         return state;
     }
