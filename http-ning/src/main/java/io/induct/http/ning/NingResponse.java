@@ -1,6 +1,9 @@
 package io.induct.http.ning;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -10,12 +13,19 @@ import com.ning.http.client.AsyncHandler;
 import com.ning.http.client.HttpResponseBodyPart;
 import com.ning.http.client.HttpResponseHeaders;
 import com.ning.http.client.HttpResponseStatus;
+import com.stackoverflow.collections.ByteBufferBackedInputStream;
 import com.stackoverflow.guava.CaseInsensitiveForwardingMap;
 import io.induct.http.HttpException;
 import io.induct.http.Response;
 import io.induct.util.concurrent.SyncValue;
 
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.io.SequenceInputStream;
+import java.nio.ByteBuffer;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -27,11 +37,11 @@ public class NingResponse implements Response, AsyncHandler<String> {
 
     private STATE state = STATE.CONTINUE;
 
-    private ByteArrayOutputStream responseBody = new ByteArrayOutputStream();
+    private List<ByteBuffer> responseBody = new LinkedList<>();
 
     private final SyncValue<Integer> statusCode;
     private final SyncValue<Multimap<String, String>> headers;
-    private final SyncValue<byte[]> body;
+    private final SyncValue<InputStream> body;
 
     private final CountDownLatch readHeaders = new CountDownLatch(1);
 
@@ -44,14 +54,6 @@ public class NingResponse implements Response, AsyncHandler<String> {
     @Override
     public void onThrowable(Throwable t) {
         throw new HttpException(t);
-    }
-
-    @Override
-    public STATE onBodyPartReceived(HttpResponseBodyPart bodyPart) throws Exception {
-        if (state != STATE.ABORT) {
-            responseBody.write(bodyPart.getBodyPartBytes());
-        }
-        return state;
     }
 
     @Override
@@ -75,6 +77,15 @@ public class NingResponse implements Response, AsyncHandler<String> {
         return state;
     }
 
+    @Override
+    public STATE onBodyPartReceived(HttpResponseBodyPart bodyPart) throws Exception {
+        if (state != STATE.ABORT) {
+            bodyPart.getBodyByteBuffer();
+            responseBody.add(bodyPart.getBodyByteBuffer());
+        }
+        return state;
+    }
+
     private ListMultimap<String, String> newCaseInsensitiveMultiMap() {
         return Multimaps.newListMultimap(new CaseInsensitiveForwardingMap<>(Maps.newHashMap()), Lists::newLinkedList);
     }
@@ -82,7 +93,17 @@ public class NingResponse implements Response, AsyncHandler<String> {
     @Override
     public String onCompleted() throws Exception {
         if (state != STATE.ABORT) {
-            this.body.push(responseBody.toByteArray());
+
+            Iterator<InputStream> responseIterators = FluentIterable.from(responseBody)
+                    .transform(new Function<ByteBuffer, InputStream>() {
+                        @Override
+                        public InputStream apply(ByteBuffer input) {
+                            return new ByteBufferBackedInputStream(input);
+                        }
+                    })
+                    .iterator();
+            Enumeration<InputStream> responseEnumeration = Iterators.asEnumeration(responseIterators);
+            this.body.push(new BufferedInputStream(new SequenceInputStream(responseEnumeration)));
         }
         return ""; // we don't care
     }
@@ -99,9 +120,9 @@ public class NingResponse implements Response, AsyncHandler<String> {
     }
 
     @Override
-    public Optional<byte[]> getResponseBody() {
+    public Optional<InputStream> getResponseBody() {
         allowHeaderReading();
-        byte[] content = body.get();
+        InputStream content = body.get();
         if (content == null) {
             return Optional.absent();
         } else {

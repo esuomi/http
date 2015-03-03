@@ -3,6 +3,8 @@ package io.induct.http;
 import com.google.common.base.Optional;
 import com.google.common.collect.Multimap;
 
+import java.io.InputStream;
+
 /**
  * Generic HTTP response wrapper.
  *
@@ -33,7 +35,7 @@ public interface Response extends AutoCloseable {
      *
      * @return Optionally available response body.
      */
-    Optional<byte[]> getResponseBody();
+    Optional<InputStream> getResponseBody();
 
     /**
      * Allow the use of <code>try-with-resources</code> block to only read the minimal amount of data. Exact behavior is
