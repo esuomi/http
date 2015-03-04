@@ -15,7 +15,9 @@ public class TestingHttpServer extends ExternalResource {
     protected void before() throws Throwable {
         this.undertow = Undertow.builder()
                 .addHttpListener(9090, "localhost")
-                .setHandler(new PathHandler().addPrefixPath("/echo", new EchoHandler()))
+                .setHandler(new PathHandler()
+                        .addPrefixPath("/echo", new EchoHandler())
+                        .addPrefixPath("/random", new RandomHandler()))
                 .build();
         undertow.start();
     }
