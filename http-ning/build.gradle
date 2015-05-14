@@ -1,3 +1,5 @@
+
 dependencies {
-    compile(group:'com.ning', name:'async-http-client', version:'1.9.10')
+    compile group:'io.induct', name:'http-core', version: version
+    compile group:'com.ning', name:'async-http-client', version:'1.9.10'
 }
