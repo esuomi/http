@@ -1,0 +1,3 @@
+dependencies {
+    testCompile group:'io.induct', name:'http-core', version: version
+}
