@@ -6,15 +6,13 @@ they all share the following two traits:
  1. They are all very powerful and provide all the bells and whistles one could ever need for HTTP client connectivity
  2. Almost none of them provide a good baseline abstraction for both easy usage and mocking of said library
 
-## The reasoning
-
 While an argument exists that HTTP client should be hidden behind a
 [Gateway](http://martinfowler.com/eaaCatalog/gateway.html) and used as is I have through experience found that being
 able to hotswap HTTP implementation itself has allowed me to reuse integration tests as system tests while still using
 the actual Gateway object. I have found this immensely valuable as this proves the Gateway object behaves correctly with
 the rest of the code base while keeping especially the tests snappy.
 
-## How to use
+## Basic use
 
 The meat of this wrapper is the `HttpClient` interface which provides the commonly used HTTP 1.1 methods as standard
 Java methods. Going line by line below is the most idiomatic use for this wrapper:
@@ -41,3 +39,13 @@ try (Response response = httpClient.get("http://www.example.com", params, header
 As you can see, no magic is involved. Headers aren't automatically set, parameters are not automatically converted from
 various object types to Strings *(you don't need to encode them though - implementations take care of that)* and in
 general there isn't a ton of builders nor other classes involved in the request itself.
+
+## Modules
+
+As not all projects can include all transitive dependencies of various libraries this client is divided into highly
+granular modules to allow you, the user, to pick and choose what you want to and can use. The modules are
+
+ - `http-core` The minimal dependency core library for the use of `HttpClient`
+ - `http-ning` Ning implementation of the `HttpClient`
+ - `http-builders` Builders and fluent utilities to ease the use of `HttpClient` and its facilities
+ - `http-integration-tests` contains test suite for all implementations.
