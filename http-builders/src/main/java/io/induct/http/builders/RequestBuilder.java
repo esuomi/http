@@ -1,7 +1,7 @@
 package io.induct.http.builders;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
 import io.induct.http.HttpClient;
 
 import java.io.ByteArrayInputStream;
@@ -9,45 +9,63 @@ import java.io.InputStream;
 import java.util.function.Consumer;
 
 /**
+ * Builder class for {@link Request} instances. Can be reused to create multiple executable {@code Request} instances,
+ * all {@code with*(...)} methods return a new isolated instance.
+ *
  * @since 2015-05-09
  */
 public class RequestBuilder {
 
+    private static final InputStream EMPTY_BODY = new ByteArrayInputStream(new byte[0]);
+
     private final HttpClient httpClient;
-    private String url;
 
-    private Multimap<String, String> headers = MultimapBuilder.hashKeys().arrayListValues().build();
+    private final String url;
 
-    private Multimap<String, String> params = MultimapBuilder.hashKeys().arrayListValues().build();
+    private final Multimap<String, String> headers;
 
-    private InputStream body = new ByteArrayInputStream(new byte[0]);
+    private final Multimap<String, String> params;
+
+    private final InputStream body;
 
     public RequestBuilder(HttpClient httpClient) {
+        this(httpClient, null, HashMultimap.create(), HashMultimap.create(), EMPTY_BODY);
+    }
+
+    private RequestBuilder(HttpClient httpClient,
+                           String url,
+                           Multimap<String, String> headers,
+                           Multimap<String, String> params,
+                           InputStream body) {
         this.httpClient = httpClient;
+        this.url = url;
+        this.headers = headers;
+        this.params = params;
+        this.body = body;
     }
 
     public RequestBuilder withUrl(String url) {
-        this.url = url;
-        return this;
+        return new RequestBuilder(httpClient, url, HashMultimap.create(headers), HashMultimap.create(params), body);
     }
 
-    public RequestBuilder withHeaders(Consumer<Multimap<String, String>> contributor) {
-        contributor.accept(headers);
-        return this;
+    public RequestBuilder withHeaders(Consumer<Multimap<String, String>> headerContributor) {
+        Multimap<String, String> newHeaders = HashMultimap.create(headers);
+        headerContributor.accept(newHeaders);
+        return new RequestBuilder(httpClient, url, newHeaders, HashMultimap.create(params), body);
     }
 
-    public RequestBuilder withParams(Consumer<Multimap<String, String>> contributor) {
-        contributor.accept(params);
-        return this;
+    public RequestBuilder withParams(Consumer<Multimap<String, String>> paramContributor) {
+        Multimap<String, String> newParams = HashMultimap.create(params);
+        paramContributor.accept(newParams);
+        return new RequestBuilder(httpClient, url, HashMultimap.create(headers), newParams, body);
     }
 
-    public RequestBuilder withBody(InputStream body) {
-        this.body = body;
-        return this;
+    public RequestBuilder withBody(InputStream newBody) {
+        return new RequestBuilder(httpClient, url, HashMultimap.create(headers), HashMultimap.create(params), newBody);
     }
 
     public Request build() {
         // TODO: Validate url
-        return new Request(httpClient, url, headers, params, body);
+        return new Request(httpClient, url, HashMultimap.create(headers), HashMultimap.create(params), body);
     }
 }
