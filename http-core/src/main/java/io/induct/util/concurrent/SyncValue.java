@@ -12,6 +12,7 @@ import java.util.concurrent.CountDownLatch;
 public class SyncValue<V> {
 
     private volatile V value;
+    private volatile boolean assigned = false;
 
     private final CountDownLatch syncLatch = new CountDownLatch(1);
     private final Supplier<V> supplier = new Supplier<V>() {
@@ -35,6 +36,7 @@ public class SyncValue<V> {
     public void push(V value) {
         try {
             this.value = value;
+            this.assigned = true;
         } finally {
             syncLatch.countDown();
         }
@@ -50,5 +52,15 @@ public class SyncValue<V> {
      */
     public V get() {
         return supplier.get();
+    }
+
+    /**
+     * Check if a value has been assigned. This can be used externally to avoid publishing multiple values and thus
+     * accidentally overriding the original intended value.
+     *
+     * @return true if value has been assigned, false otherwise
+     */
+    public boolean isAssigned() {
+        return assigned;
     }
 }

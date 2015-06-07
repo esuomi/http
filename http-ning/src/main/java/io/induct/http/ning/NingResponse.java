@@ -3,6 +3,7 @@ package io.induct.http.ning;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -15,7 +16,6 @@ import com.ning.http.client.HttpResponseHeaders;
 import com.ning.http.client.HttpResponseStatus;
 import com.stackoverflow.collections.ByteBufferBackedInputStream;
 import com.stackoverflow.guava.CaseInsensitiveForwardingMap;
-import io.induct.http.HttpException;
 import io.induct.http.Response;
 import io.induct.util.concurrent.SyncValue;
 import org.slf4j.Logger;
@@ -37,6 +37,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public class NingResponse implements Response, AsyncHandler<String> {
 
+    public static final int INVALID_STATUS_CODE = -1;
     private final Logger log = LoggerFactory.getLogger(NingResponse.class);
 
     private STATE state = STATE.CONTINUE;
@@ -57,7 +58,16 @@ public class NingResponse implements Response, AsyncHandler<String> {
 
     @Override
     public void onThrowable(Throwable t) {
-        throw new HttpException(t);
+        state = STATE.ABORT;
+
+        if (!statusCode.isAssigned())
+            statusCode.push(INVALID_STATUS_CODE);
+
+        if (!headers.isAssigned())
+            headers.push(HashMultimap.create());
+
+        if (!body.isAssigned())
+            body.push(null);
     }
 
     @Override
