@@ -8,10 +8,12 @@ import java.util.concurrent.CountDownLatch;
  * Async-to-sync value helper. Also can be considered to be a single-item blocking producer-consumer abstraction.
  *
  * @since 15.2.2015
+ * @param <V> Type of the wrapped value
  */
 public class SyncValue<V> {
 
     private volatile V value;
+    private volatile boolean assigned = false;
 
     private final CountDownLatch syncLatch = new CountDownLatch(1);
     private final Supplier<V> supplier = new Supplier<V>() {
@@ -35,20 +37,31 @@ public class SyncValue<V> {
     public void push(V value) {
         try {
             this.value = value;
+            this.assigned = true;
         } finally {
             syncLatch.countDown();
         }
     }
 
     /**
-     * Get the value. This method will block until value is being made available with {@link #push(V)} or the underlying
+     * Get the value. This method will block until value is being made available with {@link #push(Object)} or the underlying
      * latch is interrupted. There is no timeout involved making this method potentially hazardous if value is never
      * provided.
      *
-     * @return Value produced by calling {@link #push(V)}
+     * @return Value produced by calling {@link #push(Object)}
      * @throws io.induct.util.concurrent.HaltedException Thrown if value cannot be acquired.
      */
     public V get() {
         return supplier.get();
+    }
+
+    /**
+     * Check if a value has been assigned. This can be used externally to avoid publishing multiple values and thus
+     * accidentally overriding the original intended value.
+     *
+     * @return true if value has been assigned, false otherwise
+     */
+    public boolean isAssigned() {
+        return assigned;
     }
 }

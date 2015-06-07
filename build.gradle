@@ -3,6 +3,8 @@ subprojects {
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
+
+    group = 'io.induct'
     version = '0.1.0'
 
     repositories {
@@ -10,4 +12,23 @@ subprojects {
     }
 
     apply from: file("${rootProject.projectDir}/cradle/library.gradle")
+}
+
+project(':http-ning') {
+    dependencies {
+        compile project(':http-core')
+    }
+}
+
+project(':http-integration-tests') {
+    dependencies {
+        compile project(':http-core')
+        compile project(':http-ning')
+    }
+}
+
+project(':http-builders') {
+    dependencies {
+        compile project(':http-core')
+    }
 }
