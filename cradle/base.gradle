@@ -56,7 +56,6 @@ uploadArchives {
 
             pom.project {
                 name "${title}"
-                artifactId "${Project.name}"
                 packaging 'jar'
                 description "${description}"
                 url 'http://induct.io'
