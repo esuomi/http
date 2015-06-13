@@ -12,6 +12,7 @@ subprojects {
     }
 
     apply from: file("${rootProject.projectDir}/cradle/library.gradle")
+    apply from: file("${rootProject.projectDir}/cradle/publishing.gradle")
 }
 
 project(':http-ning') {
