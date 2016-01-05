@@ -14,10 +14,10 @@ javadoc.options {
 
 dependencies {
     // slf4j
-    compile group:'org.slf4j', name:'slf4j-api', version:'1.7.9'
+    compile group:'org.slf4j', name:'slf4j-api', version:'1.7.13'
 
     // better collections and other assorted utils
-    compile group: 'com.google.guava', name:'guava', version:'18.0'
+    compile group: 'com.google.guava', name:'guava', version:'19.0'
 
     // these are the EXACT dependencies one has to use when using the JUnit+Mockito combo to avoid Hamcrest
     // compilation/runtime problems
