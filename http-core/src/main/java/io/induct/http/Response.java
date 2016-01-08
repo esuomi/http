@@ -1,6 +1,5 @@
 package io.induct.http;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Multimap;
 
 import java.io.InputStream;
@@ -30,12 +29,14 @@ public interface Response extends AutoCloseable {
     Multimap<String, String> getResponseHeaders();
 
     /**
-     * Access response body if one is available. The response body can be expected to be the whole body, not multipart
-     * or stream.
+     * Access response body. While represented as a single stream, the actual content may be chunked depending on
+     * provider implementation. Therefore the availability of content should be checked with the
+     * <code>Content-Length</code> HTTP header or inspecting the amount of returned bytes by calling
+     * {@link InputStream#available()}.
      *
-     * @return Optionally available response body.
+     * @return Response body.
      */
-    Optional<InputStream> getResponseBody();
+    InputStream getResponseBody();
 
     /**
      * Allow the use of <code>try-with-resources</code> block to only read the minimal amount of data. Exact behavior is
