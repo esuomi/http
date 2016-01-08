@@ -1,10 +1,6 @@
 package io.induct.http.ning;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -17,17 +13,13 @@ import com.ning.http.client.HttpResponseStatus;
 import com.stackoverflow.collections.ByteBufferBackedInputStream;
 import com.stackoverflow.guava.CaseInsensitiveForwardingMap;
 import io.induct.http.Response;
+import io.induct.io.ContinuousInputStream;
 import io.induct.util.concurrent.SyncValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
 import java.io.InputStream;
-import java.io.SequenceInputStream;
 import java.nio.ByteBuffer;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -35,25 +27,25 @@ import java.util.concurrent.CountDownLatch;
 /**
  * @since 15.2.2015
  */
-public class NingResponse implements Response, AsyncHandler<String> {
+public class NingResponse implements Response, AsyncHandler<Void> {
 
     public static final int INVALID_STATUS_CODE = -1;
+
     private final Logger log = LoggerFactory.getLogger(NingResponse.class);
 
     private STATE state = STATE.CONTINUE;
 
-    private List<ByteBuffer> responseBody = new LinkedList<>();
-
     private final SyncValue<Integer> statusCode;
     private final SyncValue<Multimap<String, String>> headers;
-    private final SyncValue<InputStream> body;
+
+    private final ContinuousInputStream body;
 
     private final CountDownLatch readHeaders = new CountDownLatch(1);
 
     public NingResponse() {
         statusCode = new SyncValue<>();
         headers = new SyncValue<>();
-        body = new SyncValue<>();
+        body = new ContinuousInputStream();
     }
 
     @Override
@@ -66,8 +58,7 @@ public class NingResponse implements Response, AsyncHandler<String> {
         if (!headers.isAssigned())
             headers.push(HashMultimap.create());
 
-        if (!body.isAssigned())
-            body.push(null);
+        body.markComplete();
     }
 
     @Override
@@ -93,11 +84,14 @@ public class NingResponse implements Response, AsyncHandler<String> {
 
     @Override
     public STATE onBodyPartReceived(HttpResponseBodyPart bodyPart) throws Exception {
-        if (state != STATE.ABORT) {
-            ByteBuffer part = bodyPart.getBodyByteBuffer();
-            responseBody.add(part);
-            log.trace("Received response body part of {} bytes", part.capacity());
+        ByteBuffer part = bodyPart.getBodyByteBuffer();
+        log.debug("Received response body part of {} bytes", part.limit());
+        if (body.offer(new ByteBufferBackedInputStream(part))) {
+            log.debug("Body part was added to continuous body stream");
+        } else {
+            log.warn("Body stream rejected body part");
         }
+        log.debug("is last? {} closing underlying? {}", bodyPart.isLast(), bodyPart.isUnderlyingConnectionToBeClosed());
         return state;
     }
 
@@ -106,21 +100,10 @@ public class NingResponse implements Response, AsyncHandler<String> {
     }
 
     @Override
-    public String onCompleted() throws Exception {
-        if (state != STATE.ABORT) {
-
-            Iterator<InputStream> responseIterators = FluentIterable.from(responseBody)
-                    .transform(new Function<ByteBuffer, InputStream>() {
-                        @Override
-                        public InputStream apply(ByteBuffer input) {
-                            return new ByteBufferBackedInputStream(input);
-                        }
-                    })
-                    .iterator();
-            Enumeration<InputStream> responseEnumeration = Iterators.asEnumeration(responseIterators);
-            this.body.push(new BufferedInputStream(new SequenceInputStream(responseEnumeration)));
-        }
-        return ""; // we don't care
+    public Void onCompleted() throws Exception {
+        log.info("Processing complete");
+        body.markComplete();
+        return null; // we don't care
     }
 
     @Override
@@ -135,14 +118,9 @@ public class NingResponse implements Response, AsyncHandler<String> {
     }
 
     @Override
-    public Optional<InputStream> getResponseBody() {
+    public InputStream getResponseBody() {
         allowHeaderReading();
-        InputStream content = body.get();
-        if (content == null) {
-            return Optional.absent();
-        } else {
-            return Optional.of(content);
-        }
+        return body;
     }
 
     @Override

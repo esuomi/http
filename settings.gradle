@@ -1,2 +1,2 @@
 rootProject.name="http"
-include 'http-core', 'http-ning', 'http-integration-tests', 'http-builders'
+include 'http-core', 'http-provider-ning', 'http-integration-tests', 'http-builders', 'http-ioc-guice'

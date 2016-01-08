@@ -15,7 +15,7 @@ subprojects {
     apply from: file("${rootProject.projectDir}/cradle/publishing.gradle")
 }
 
-project(':http-ning') {
+project(':http-provider-ning') {
     dependencies {
         compile project(':http-core')
     }
@@ -24,7 +24,7 @@ project(':http-ning') {
 project(':http-integration-tests') {
     dependencies {
         compile project(':http-core')
-        compile project(':http-ning')
+        compile project(':http-provider-ning')
     }
 }
 
