@@ -1,6 +1,5 @@
 package io.induct.http;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -19,8 +18,8 @@ import java.io.InputStream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @since 28.2.2015
@@ -101,22 +100,18 @@ public abstract class IntegrationTests<C extends HttpClient> {
         params.put("n", Integer.toString(MEGABYTE));
         Multimap<String, String> headers = HashMultimap.create();
 
-        InputStream responseBody = null;
         try (Response response = caller.execute("http://localhost:9090/random", params, headers, EMPTY_STREAM)) {
             assertThat(response.getStatusCode(), is(200));
-            Optional<InputStream> responseBodyOpt = response.getResponseBody();
-            assertTrue("No response body available, expected 1MB of content", responseBodyOpt.isPresent());
-            // the value is carried outside the try-with-resources to test the side effect that body reading still works
-            // even when the context has been shut down
-            responseBody = responseBodyOpt.get();
+            InputStream responseBody = response.getResponseBody();
+            assertNotNull("No response body available, expected 1MB of content", responseBody);
+
+            long counter = 0;
+            for (int b = responseBody.read(); b != -1 ; b = responseBody.read()) {
+                counter++;
+            }
+            assertEquals("Wrong amount of bytes in response.", MEGABYTE, counter);
         }
 
-        long counter = 0;
-        for (int b = responseBody.read(); b != -1 ; b = responseBody.read()) {
-            counter++;
-        }
-
-        assertEquals("Wrong amount of bytes in response.", MEGABYTE, counter);
     }
 
     protected static void assertHeader(Response response, String headerName, String headerValue) {
