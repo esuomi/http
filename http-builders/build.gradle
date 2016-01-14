@@ -1,0 +1,10 @@
+repositories {
+    maven {
+        name 'jcenter'
+        url 'https://jcenter.bintray.com/'
+    }
+}
+
+dependencies {
+    compile 'io.mikael:urlbuilder:2.0.5'
+}

@@ -1,11 +1,15 @@
 package io.induct.http.builders;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import io.induct.http.HttpClient;
+import io.mikael.urlbuilder.UrlBuilder;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.function.Consumer;
 
 /**
@@ -20,7 +24,7 @@ public class RequestBuilder {
 
     private final HttpClient httpClient;
 
-    private final String url;
+    private final URI uri;
 
     private final Multimap<String, String> headers;
 
@@ -33,39 +37,44 @@ public class RequestBuilder {
     }
 
     private RequestBuilder(HttpClient httpClient,
-                           String url,
+                           URI uri,
                            Multimap<String, String> headers,
                            Multimap<String, String> params,
                            InputStream body) {
         this.httpClient = httpClient;
-        this.url = url;
+        this.uri = uri;
         this.headers = headers;
         this.params = params;
         this.body = body;
     }
 
-    public RequestBuilder withUrl(String url) {
-        return new RequestBuilder(httpClient, url, HashMultimap.create(headers), HashMultimap.create(params), body);
+    public RequestBuilder withUri(String uri) {
+        try {
+            URI parsedUri = UrlBuilder.fromString(uri).toUriWithException();
+            Preconditions.checkArgument(parsedUri.getQuery() == null, "URI should not contain query params! Set params by calling #withParams(...)");
+            return new RequestBuilder(httpClient, parsedUri, HashMultimap.create(headers), HashMultimap.create(params), body);
+        } catch (URISyntaxException e) {
+            throw new InvalidUriException("Invalid URL, cannot build request from " + uri, e);
+        }
     }
 
     public RequestBuilder withHeaders(Consumer<Multimap<String, String>> headerContributor) {
         Multimap<String, String> newHeaders = HashMultimap.create(headers);
         headerContributor.accept(newHeaders);
-        return new RequestBuilder(httpClient, url, newHeaders, HashMultimap.create(params), body);
+        return new RequestBuilder(httpClient, uri, newHeaders, HashMultimap.create(params), body);
     }
 
     public RequestBuilder withParams(Consumer<Multimap<String, String>> paramContributor) {
         Multimap<String, String> newParams = HashMultimap.create(params);
         paramContributor.accept(newParams);
-        return new RequestBuilder(httpClient, url, HashMultimap.create(headers), newParams, body);
+        return new RequestBuilder(httpClient, uri, HashMultimap.create(headers), newParams, body);
     }
 
     public RequestBuilder withBody(InputStream newBody) {
-        return new RequestBuilder(httpClient, url, HashMultimap.create(headers), HashMultimap.create(params), newBody);
+        return new RequestBuilder(httpClient, uri, HashMultimap.create(headers), HashMultimap.create(params), newBody);
     }
 
     public Request build() {
-        // TODO: Validate url
-        return new Request(httpClient, url, HashMultimap.create(headers), HashMultimap.create(params), body);
+        return new Request(httpClient, uri, HashMultimap.create(headers), HashMultimap.create(params), body);
     }
 }
