@@ -7,10 +7,6 @@ subprojects {
     group = 'io.induct.http'
     version = '0.2.0'
 
-    repositories {
-        mavenCentral()
-    }
-
     apply from: file("${rootProject.projectDir}/cradle/library.gradle")
     apply from: file("${rootProject.projectDir}/cradle/publishing.gradle")
 }
