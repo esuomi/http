@@ -3,6 +3,7 @@ package io.induct.http;
 import com.google.common.collect.Multimap;
 
 import java.io.InputStream;
+import java.net.URI;
 
 /**
  * Low level HTTP client abstraction for interacting with HTTP APIs or alternatively functional test derivatives. The
@@ -32,7 +33,7 @@ public interface HttpClient {
      * @return Server response
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-9.2">RFC-2616 9.2 OPTIONS</a>
      */
-    Response options(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody);
+    Response options(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody);
 
     /**
      * Perform HTTP GET call.
@@ -44,7 +45,7 @@ public interface HttpClient {
      * @return Server response
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-9.3">RFC-2616 9.3 GET</a>
      */
-    Response get(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody);
+    Response get(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody);
 
     /**
      * Perform HTTP HEAD call.
@@ -56,7 +57,7 @@ public interface HttpClient {
      * @return Server response
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-9.4">RFC-2616 9.4 HEAD</a>
      */
-    Response head(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody);
+    Response head(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody);
 
     /**
      * Perform HTTP POST call.
@@ -68,7 +69,7 @@ public interface HttpClient {
      * @return Server response
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-9.5">RFC-2616 9.5 POST</a>
      */
-    Response post(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody);
+    Response post(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody);
 
     /**
      * Perform HTTP PUT call.
@@ -80,7 +81,7 @@ public interface HttpClient {
      * @return Server response
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-9.6">RFC-2616 9.6 PUT</a>
      */
-    Response put(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody);
+    Response put(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody);
 
     /**
      * Perform HTTP DELETE call.
@@ -92,6 +93,6 @@ public interface HttpClient {
      * @return Server response
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-9.7">RFC-2616 9.7 DELETE</a>
      */
-    Response delete(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody);
+    Response delete(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody);
 
 }

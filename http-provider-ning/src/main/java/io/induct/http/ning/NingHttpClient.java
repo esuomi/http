@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
 
@@ -26,60 +27,60 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
     }
 
     @Override
-    public Response options(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
-        log.debug("HTTP OPTIONS {}", url);
+    public Response options(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
+        log.debug("HTTP OPTIONS {}", uri);
         try {
-            return request(params, headers, requestBody, client.prepareOptions(url));
+            return request(params, headers, requestBody, client.prepareOptions(uri.toString()));
         } catch (NullPointerException npe) {
             throw new HttpException("HTTP OPTIONS failed", npe);
         }
     }
 
     @Override
-    public Response get(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
-        log.debug("HTTP GET {}", url);
+    public Response get(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
+        log.debug("HTTP GET {}", uri);
         try {
-            return request(params, headers, requestBody, client.prepareGet(url));
+            return request(params, headers, requestBody, client.prepareGet(uri.toString()));
         } catch (NullPointerException npe) {
             throw new HttpException("HTTP GET failed", npe);
         }
     }
 
     @Override
-    public Response head(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
-        log.debug("HTTP HEAD {}", url);
+    public Response head(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
+        log.debug("HTTP HEAD {}", uri);
         try {
-            return request(params, headers, requestBody, client.prepareHead(url));
+            return request(params, headers, requestBody, client.prepareHead(uri.toString()));
         } catch (NullPointerException npe) {
             throw new HttpException("HTTP HEAD failed", npe);
         }
     }
 
     @Override
-    public Response post(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
-        log.debug("HTTP POST {}", url);
+    public Response post(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
+        log.debug("HTTP POST {}", uri);
         try {
-            return request(params, headers, requestBody, client.preparePost(url));
+            return request(params, headers, requestBody, client.preparePost(uri.toString()));
         } catch (NullPointerException npe) {
             throw new HttpException("HTTP POST failed", npe);
         }
     }
 
     @Override
-    public Response put(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
-        log.debug("HTTP PUT {}", url);
+    public Response put(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
+        log.debug("HTTP PUT {}", uri);
         try {
-            return request(params, headers, requestBody, client.preparePut(url));
+            return request(params, headers, requestBody, client.preparePut(uri.toString()));
         } catch (NullPointerException npe) {
             throw new HttpException("HTTP PUT failed", npe);
         }
 }
 
     @Override
-    public Response delete(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
-        log.debug("HTTP DELETE {}", url);
+    public Response delete(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
+        log.debug("HTTP DELETE {}", uri);
         try {
-            return request(params, headers, requestBody, client.prepareDelete(url));
+            return request(params, headers, requestBody, client.prepareDelete(uri.toString()));
         } catch (NullPointerException npe) {
             throw new HttpException("HTTP DELETE failed", npe);
         }
