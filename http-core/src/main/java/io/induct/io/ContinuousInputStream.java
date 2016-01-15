@@ -106,7 +106,7 @@ public class ContinuousInputStream extends InputStream {
      * @param stream
      * @return
      * @throws NullPointerException Thrown if given stream is null
-     * @see {@link BlockingQueue#offer(Object)}
+     * @see BlockingQueue#offer(Object)
      */
     public boolean offer(InputStream stream) {
         Preconditions.checkNotNull(stream, "non-null streams not allowed!");

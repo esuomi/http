@@ -26,7 +26,7 @@ public interface HttpClient {
     /**
      * Perform HTTP OPTIONS call.
      *
-     * @param url Full URL including scheme, authority and path
+     * @param uri Full URL including scheme, authority and path
      * @param params URL parameters for the call
      * @param headers HTTP headers to send with the call
      * @param requestBody Request body to send. Note that HTTP OPTIONS does not specify any use for this in HTTP1.1 spec
@@ -38,7 +38,7 @@ public interface HttpClient {
     /**
      * Perform HTTP GET call.
      *
-     * @param url Full URL including scheme, authority and path
+     * @param uri Full URL including scheme, authority and path
      * @param params URL parameters for the call
      * @param headers HTTP headers to send with the call
      * @param requestBody Request body to send
@@ -50,7 +50,7 @@ public interface HttpClient {
     /**
      * Perform HTTP HEAD call.
      *
-     * @param url Full URL including scheme, authority and path
+     * @param uri Full URL including scheme, authority and path
      * @param params URL parameters for the call
      * @param headers HTTP headers to send with the call
      * @param requestBody Request body to send
@@ -62,7 +62,7 @@ public interface HttpClient {
     /**
      * Perform HTTP POST call.
      *
-     * @param url Full URL including scheme, authority and path
+     * @param uri Full URL including scheme, authority and path
      * @param params URL parameters for the call
      * @param headers HTTP headers to send with the call
      * @param requestBody Request body to send
@@ -74,7 +74,7 @@ public interface HttpClient {
     /**
      * Perform HTTP PUT call.
      *
-     * @param url Full URL including scheme, authority and path
+     * @param uri Full URL including scheme, authority and path
      * @param params URL parameters for the call
      * @param headers HTTP headers to send with the call
      * @param requestBody Request body to send
@@ -86,7 +86,7 @@ public interface HttpClient {
     /**
      * Perform HTTP DELETE call.
      *
-     * @param url Full URL including scheme, authority and path
+     * @param uri Full URL including scheme, authority and path
      * @param params URL parameters for the call
      * @param headers HTTP headers to send with the call
      * @param requestBody Request body to send
