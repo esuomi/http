@@ -25,3 +25,10 @@ git push -u origin master
 After this you can start adding the actual project files. Easiest place to start
 is the missing `build.gradle` and `gradle.properties` which are not included to
 avoid accidentally overwriting either when updating Cradle.
+
+## `build.gradle` templates
+
+Despite being able to share _most_ build logic, Gradle unfortunately has certain bugs which prevent sharing
+_all_ build logic. For this reason the following templates are provided:
+
+ - [**`multi.gradle`**](templates/multi.gradle) for multi module projects
