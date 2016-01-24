@@ -6,5 +6,6 @@ repositories {
 }
 
 dependencies {
+    compile project(':http-core')
     compile 'io.mikael:urlbuilder:2.0.5'
 }

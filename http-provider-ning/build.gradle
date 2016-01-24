@@ -1,3 +1,4 @@
 dependencies {
+    compile project(':http-core')
     compile(group:'com.ning', name:'async-http-client', version:'1.9.10')
 }

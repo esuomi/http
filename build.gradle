@@ -1,31 +1,26 @@
+// TODO: Simplify syntax once Gradle supports plugin DSL usage for submodule definitions
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3'
+        classpath 'com.netflix.nebula:gradle-aggregate-javadocs-plugin:3.0.1'
+    }
+}
+
+apply from: file("${rootProject.projectDir}/cradle/root.gradle")
+
 subprojects {
-    apply plugin: 'java'
+    apply from: file("${rootProject.projectDir}/cradle/library.gradle")
+    apply from: file("${rootProject.projectDir}/cradle/publishing.gradle")
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
     group = 'io.induct.http'
     version = '0.2.0'
-
-    apply from: file("${rootProject.projectDir}/cradle/library.gradle")
-    apply from: file("${rootProject.projectDir}/cradle/publishing.gradle")
-}
-
-project(':http-provider-ning') {
-    dependencies {
-        compile project(':http-core')
-    }
-}
-
-project(':http-integration-tests') {
-    dependencies {
-        compile project(':http-core')
-        compile project(':http-provider-ning')
-    }
-}
-
-project(':http-builders') {
-    dependencies {
-        compile project(':http-core')
-    }
 }
