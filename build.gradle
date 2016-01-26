@@ -18,8 +18,8 @@ subprojects {
     apply from: file("${rootProject.projectDir}/cradle/library.gradle")
     apply from: file("${rootProject.projectDir}/cradle/publishing.gradle")
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 
     group = 'io.induct.http'
     version = '0.2.0'
