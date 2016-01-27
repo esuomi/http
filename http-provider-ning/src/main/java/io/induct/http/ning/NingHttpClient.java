@@ -5,8 +5,6 @@ import com.ning.http.client.AsyncHttpClient;
 import io.induct.http.HttpClient;
 import io.induct.http.HttpException;
 import io.induct.http.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -15,8 +13,6 @@ import java.net.URI;
  * @since 15.2.2015
  */
 public class NingHttpClient implements HttpClient, AutoCloseable {
-
-    private final Logger log = LoggerFactory.getLogger(NingHttpClient.class);
 
     private final AsyncHttpClient client;
 
