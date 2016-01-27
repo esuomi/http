@@ -10,8 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * @since 15.2.2015
@@ -68,23 +66,15 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
     }
 
     private void contributeQueryParams(AsyncHttpClient.BoundRequestBuilder request, Multimap<String, String> params) {
-        log.debug("\t\tparams: {}", params);
-        for (Map.Entry<String, Collection<String>> param : params.asMap().entrySet()) {
-            for (String value : param.getValue()) {
-                request.addQueryParam(param.getKey(), value);
-            }
-        }
+        params.asMap()
+            .forEach((name, values) ->
+                values.forEach((value) -> request.addQueryParam(name, value)));
     }
 
     private void contributeHeaders(AsyncHttpClient.BoundRequestBuilder request, Multimap<String, String> headers) {
-
-        for (Map.Entry<String, Collection<String>> header : headers.asMap().entrySet()) {
-            String name = header.getKey();
-            for (String value : header.getValue()) {
-                log.debug("\t\trequest header >> {}:{}", name, value);
-                request.addHeader(name, value);
-            }
-        }
+        headers.asMap()
+            .forEach((name, values) ->
+                values.forEach((value) -> request.addHeader(name, value)));
     }
 
     private void contributeRequestBody(AsyncHttpClient.BoundRequestBuilder request, InputStream requestBody) {
