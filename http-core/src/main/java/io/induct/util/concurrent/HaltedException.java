@@ -11,6 +11,8 @@ package io.induct.util.concurrent;
  */
 public class HaltedException extends RuntimeException {
 
+    private static final long serialVersionUID = -1460074474930660467L;
+
     public HaltedException() {
         super();
     }

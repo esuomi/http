@@ -8,6 +8,8 @@ package io.induct.http;
  */
 public class HttpException extends RuntimeException {
 
+    private static final long serialVersionUID = 4157677754810080456L;
+
     public HttpException(String message) {
         super(message);
     }

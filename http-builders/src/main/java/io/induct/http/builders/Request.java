@@ -6,6 +6,7 @@ import io.induct.http.Response;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Optional;
 
 /**
  * @since 2015-05-09
@@ -16,9 +17,9 @@ public class Request {
     private final URI uri;
     private final Multimap<String, String> headers;
     private final Multimap<String, String> params;
-    private final InputStream body;
+    private final Optional<InputStream> body;
 
-    Request(HttpClient http, URI uri, Multimap<String, String> headers, Multimap<String, String> params, InputStream body) {
+    Request(HttpClient http, URI uri, Multimap<String, String> headers, Multimap<String, String> params, Optional<InputStream> body) {
         this.http = http;
         this.uri = uri;
         this.headers = headers;
@@ -47,6 +48,6 @@ public class Request {
     }
 
     private interface Method {
-        Response call(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream body);
+        Response call(URI uri, Multimap<String, String> params, Multimap<String, String> headers, Optional<InputStream> body);
     }
 }

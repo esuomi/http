@@ -6,10 +6,10 @@ import com.google.common.collect.Multimap;
 import io.induct.http.HttpClient;
 import io.mikael.urlbuilder.UrlBuilder;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -20,8 +20,6 @@ import java.util.function.Consumer;
  */
 public class RequestBuilder {
 
-    private static final InputStream EMPTY_BODY = new ByteArrayInputStream(new byte[0]);
-
     private final HttpClient httpClient;
 
     private final URI uri;
@@ -30,17 +28,17 @@ public class RequestBuilder {
 
     private final Multimap<String, String> params;
 
-    private final InputStream body;
+    private final Optional<InputStream> body;
 
     public RequestBuilder(HttpClient httpClient) {
-        this(httpClient, null, HashMultimap.create(), HashMultimap.create(), EMPTY_BODY);
+        this(httpClient, null, HashMultimap.create(), HashMultimap.create(), Optional.empty());
     }
 
     private RequestBuilder(HttpClient httpClient,
                            URI uri,
                            Multimap<String, String> headers,
                            Multimap<String, String> params,
-                           InputStream body) {
+                           Optional<InputStream> body) {
         this.httpClient = httpClient;
         this.uri = uri;
         this.headers = headers;
@@ -70,7 +68,7 @@ public class RequestBuilder {
         return new RequestBuilder(httpClient, uri, HashMultimap.create(headers), newParams, body);
     }
 
-    public RequestBuilder withBody(InputStream newBody) {
+    public RequestBuilder withBody(Optional<InputStream> newBody) {
         return new RequestBuilder(httpClient, uri, HashMultimap.create(headers), HashMultimap.create(params), newBody);
     }
 

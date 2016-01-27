@@ -113,6 +113,13 @@ public class ContinuousInputStream extends InputStream {
         return streams.offer(Optional.of(stream));
     }
 
+    @Override
+    public void close() throws IOException {
+        availability = Availability.FINISHED;
+        streams.clear();
+        super.close();
+    }
+
     private enum Availability {
         HAS_MORE(1), FINISHED(0);
 

@@ -8,6 +8,7 @@ import io.induct.http.Response;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 /**
@@ -22,36 +23,36 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
     }
 
     @Override
-    public Response options(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
+    public Response options(URI uri, Multimap<String, String> params, Multimap<String, String> headers, Optional<InputStream> requestBody) {
         return request(params, headers, requestBody, client.prepareOptions(uri.toString()));
     }
 
     @Override
-    public Response get(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
+    public Response get(URI uri, Multimap<String, String> params, Multimap<String, String> headers, Optional<InputStream> requestBody) {
         return request(params, headers, requestBody, client.prepareGet(uri.toString()));
     }
 
     @Override
-    public Response head(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
+    public Response head(URI uri, Multimap<String, String> params, Multimap<String, String> headers, Optional<InputStream> requestBody) {
         return request(params, headers, requestBody, client.prepareHead(uri.toString()));
     }
 
     @Override
-    public Response post(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
+    public Response post(URI uri, Multimap<String, String> params, Multimap<String, String> headers, Optional<InputStream> requestBody) {
         return request(params, headers, requestBody, client.preparePost(uri.toString()));
     }
 
     @Override
-    public Response put(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
+    public Response put(URI uri, Multimap<String, String> params, Multimap<String, String> headers, Optional<InputStream> requestBody) {
         return request(params, headers, requestBody, client.preparePut(uri.toString()));
     }
 
     @Override
-    public Response delete(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
+    public Response delete(URI uri, Multimap<String, String> params, Multimap<String, String> headers, Optional<InputStream> requestBody) {
         return request(params, headers, requestBody, client.prepareDelete(uri.toString()));
     }
 
-    private Response request(Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody, AsyncHttpClient.BoundRequestBuilder request) {
+    private Response request(Multimap<String, String> params, Multimap<String, String> headers, Optional<InputStream> requestBody, AsyncHttpClient.BoundRequestBuilder request) {
         try {
             contributeQueryParams(request, params);
             contributeHeaders(request, headers);
@@ -76,9 +77,9 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
                 consumer.accept(name, value)));
     }
 
-    private void contributeRequestBody(AsyncHttpClient.BoundRequestBuilder request, InputStream requestBody) {
-        if (requestBody != null) {
-            request.setBody(requestBody);
+    private void contributeRequestBody(AsyncHttpClient.BoundRequestBuilder request, Optional<InputStream> requestBody) {
+        if (requestBody.isPresent()) {
+            request.setBody(requestBody.get());
         }
     }
 

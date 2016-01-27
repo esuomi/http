@@ -14,6 +14,9 @@ import org.junit.rules.TestName;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
@@ -26,7 +29,6 @@ import static org.junit.Assert.assertThat;
  */
 public abstract class IntegrationTests<C extends HttpClient> {
 
-    private static final InputStream EMPTY_STREAM = new ByteArrayInputStream(new byte[0]);
     private static final int MEGABYTE = 1024 * 1024;
 
     @ClassRule
@@ -45,12 +47,12 @@ public abstract class IntegrationTests<C extends HttpClient> {
     }
 
     @Test
-    public void shouldHandleGet() {
+    public void shouldHandleGet() throws Exception {
         echo(http::get);
     }
 
     @Test
-    public void shouldHandleEchoingPost() {
+    public void shouldHandleEchoingPost() throws Exception {
         echo(http::post);
     }
 
@@ -74,7 +76,7 @@ public abstract class IntegrationTests<C extends HttpClient> {
         echo(http::delete);
     }
 
-    private void echo(Caller caller) {
+    private void echo(Caller caller) throws URISyntaxException {
         Multimap<String, String> params = HashMultimap.create();
         params.put("echo", testName.getMethodName());
 
@@ -82,8 +84,8 @@ public abstract class IntegrationTests<C extends HttpClient> {
         String echoHeaderValue = Long.toString(System.currentTimeMillis());
         headers.put(EchoHandler.X_ECHO_HEADER.toString(), echoHeaderValue);
 
-        InputStream body = new ByteArrayInputStream(testName.getMethodName().getBytes());
-        try (Response response = caller.execute("http://localhost:9090/echo", params, headers, body)) {
+        Optional<InputStream> body = Optional.of(new ByteArrayInputStream(testName.getMethodName().getBytes()));
+        try (Response response = caller.execute(new URI("http://localhost:9090/echo"), params, headers, body)) {
             assertThat(response.getStatusCode(), is(200));
             assertHeader(response, EchoHandler.X_ECHO_HEADER.toString(), echoHeaderValue);
             assertHeader(response, EchoHandler.X_ECHO_PARAM.toString(), testName.getMethodName());
@@ -95,12 +97,12 @@ public abstract class IntegrationTests<C extends HttpClient> {
         random(http::get);
     }
 
-    private void random(Caller caller) throws IOException {
+    private void random(Caller caller) throws IOException, URISyntaxException {
         Multimap<String, String> params = HashMultimap.create();
         params.put("n", Integer.toString(MEGABYTE));
         Multimap<String, String> headers = HashMultimap.create();
 
-        try (Response response = caller.execute("http://localhost:9090/random", params, headers, EMPTY_STREAM)) {
+        try (Response response = caller.execute(new URI("http://localhost:9090/random"), params, headers, Optional.empty())) {
             assertThat(response.getStatusCode(), is(200));
             InputStream responseBody = response.getResponseBody();
             assertNotNull("No response body available, expected 1MB of content", responseBody);
@@ -122,6 +124,6 @@ public abstract class IntegrationTests<C extends HttpClient> {
     }
 
     private interface Caller {
-        Response execute(String url, Multimap<String, String> params, Multimap<String, String> headers, InputStream body);
+        Response execute(URI uri, Multimap<String, String> params, Multimap<String, String> headers, Optional<InputStream> body);
     }
 }

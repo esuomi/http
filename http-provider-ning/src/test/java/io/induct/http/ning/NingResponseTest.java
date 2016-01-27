@@ -13,12 +13,12 @@ public class NingResponseTest {
 
     @Test
     public void shouldReturnEmptyValuesIfConnectionFails() throws Exception {
-        NingResponse response = new NingResponse();
+        try (NingResponse response = new NingResponse()) {
+            response.onThrowable(new RuntimeException("simulated failure"));
 
-        response.onThrowable(new RuntimeException("simulated failure"));
-
-        assertTrue(response.getResponseHeaders().isEmpty());
-        assertNotNull(response.getResponseBody());
-        assertEquals(NingResponse.INVALID_STATUS_CODE, response.getStatusCode());
+            assertTrue(response.getResponseHeaders().isEmpty());
+            assertNotNull(response.getResponseBody());
+            assertEquals(NingResponse.INVALID_STATUS_CODE, response.getStatusCode());
+        }
     }
 }
