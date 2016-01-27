@@ -95,10 +95,13 @@ public class ContinuousInputStream extends InputStream {
     }
 
     /**
-     * Marks the stream as complete. Processing will continue until all already received parts have been processed fully.
+     * Marks the stream as complete. Processing will continue until all already received parts have been processed
+     * fully. It is safe to call this method multiple times.
      */
     public void markComplete() {
-        streams.offer(Optional.empty());
+        if (availability != Availability.FINISHED) {
+            streams.offer(Optional.empty());
+        }
     }
 
     /**

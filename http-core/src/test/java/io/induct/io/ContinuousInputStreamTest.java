@@ -13,18 +13,16 @@ public class ContinuousInputStreamTest {
 
     @Test
     public void dataComesAvailableAfterPushingStream() throws Exception {
+
         ContinuousInputStream stream = new ContinuousInputStream();
+        Thread t = new Thread(() -> {
+            stream.offer(new ByteArrayInputStream("Hello, ".getBytes()));
+            stream.offer(new ByteArrayInputStream("World!".getBytes()));
+            stream.markComplete();
+        });
 
-        Thread t = null;
         try {
-            t = new Thread(() -> {
-                stream.offer(new ByteArrayInputStream("Hello, ".getBytes()));
-                stream.offer(new ByteArrayInputStream("World!".getBytes()));
-                stream.markComplete();
-            });
-
             t.start();
-
             StringBuilder greeting = new StringBuilder();
             while (stream.available() > 0) {
                 int c = stream.read();
@@ -35,6 +33,7 @@ public class ContinuousInputStreamTest {
 
             assertEquals("Hello, World!", greeting.toString());
         } finally {
+            stream.close();
             t.interrupt();
         }
     }
