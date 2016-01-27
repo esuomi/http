@@ -28,69 +28,43 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
 
     @Override
     public Response options(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
-        log.debug("HTTP OPTIONS {}", uri);
-        try {
-            return request(params, headers, requestBody, client.prepareOptions(uri.toString()));
-        } catch (NullPointerException npe) {
-            throw new HttpException("HTTP OPTIONS failed", npe);
-        }
+        return request(params, headers, requestBody, client.prepareOptions(uri.toString()));
     }
 
     @Override
     public Response get(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
-        log.debug("HTTP GET {}", uri);
-        try {
-            return request(params, headers, requestBody, client.prepareGet(uri.toString()));
-        } catch (NullPointerException npe) {
-            throw new HttpException("HTTP GET failed", npe);
-        }
+        return request(params, headers, requestBody, client.prepareGet(uri.toString()));
     }
 
     @Override
     public Response head(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
-        log.debug("HTTP HEAD {}", uri);
-        try {
-            return request(params, headers, requestBody, client.prepareHead(uri.toString()));
-        } catch (NullPointerException npe) {
-            throw new HttpException("HTTP HEAD failed", npe);
-        }
+        return request(params, headers, requestBody, client.prepareHead(uri.toString()));
     }
 
     @Override
     public Response post(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
-        log.debug("HTTP POST {}", uri);
-        try {
-            return request(params, headers, requestBody, client.preparePost(uri.toString()));
-        } catch (NullPointerException npe) {
-            throw new HttpException("HTTP POST failed", npe);
-        }
+        return request(params, headers, requestBody, client.preparePost(uri.toString()));
     }
 
     @Override
     public Response put(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
-        log.debug("HTTP PUT {}", uri);
-        try {
-            return request(params, headers, requestBody, client.preparePut(uri.toString()));
-        } catch (NullPointerException npe) {
-            throw new HttpException("HTTP PUT failed", npe);
-        }
-}
+        return request(params, headers, requestBody, client.preparePut(uri.toString()));
+    }
 
     @Override
     public Response delete(URI uri, Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody) {
-        log.debug("HTTP DELETE {}", uri);
-        try {
-            return request(params, headers, requestBody, client.prepareDelete(uri.toString()));
-        } catch (NullPointerException npe) {
-            throw new HttpException("HTTP DELETE failed", npe);
-        }
+        return request(params, headers, requestBody, client.prepareDelete(uri.toString()));
     }
 
     private Response request(Multimap<String, String> params, Multimap<String, String> headers, InputStream requestBody, AsyncHttpClient.BoundRequestBuilder request) {
-        contributeQueryParams(request, params);
-        contributeHeaders(request, headers);
-        contributeRequestBody(request, requestBody);
-        return execute(request);
+        try {
+            contributeQueryParams(request, params);
+            contributeHeaders(request, headers);
+            contributeRequestBody(request, requestBody);
+            return execute(request);
+        } catch (NullPointerException npe) {
+            throw new HttpException("HTTP request failed", npe);
+        }
     }
 
     private void contributeQueryParams(AsyncHttpClient.BoundRequestBuilder request, Multimap<String, String> params) {
@@ -103,6 +77,7 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
     }
 
     private void contributeHeaders(AsyncHttpClient.BoundRequestBuilder request, Multimap<String, String> headers) {
+
         for (Map.Entry<String, Collection<String>> header : headers.asMap().entrySet()) {
             String name = header.getKey();
             for (String value : header.getValue()) {
