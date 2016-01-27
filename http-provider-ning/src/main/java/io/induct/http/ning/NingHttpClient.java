@@ -8,6 +8,7 @@ import io.induct.http.Response;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.util.function.BiConsumer;
 
 /**
  * @since 15.2.2015
@@ -62,15 +63,17 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
     }
 
     private void contributeQueryParams(AsyncHttpClient.BoundRequestBuilder request, Multimap<String, String> params) {
-        params.asMap()
-            .forEach((name, values) ->
-                values.forEach((value) -> request.addQueryParam(name, value)));
+        consumeMultimap(params, request::addQueryParam);
     }
 
     private void contributeHeaders(AsyncHttpClient.BoundRequestBuilder request, Multimap<String, String> headers) {
-        headers.asMap()
-            .forEach((name, values) ->
-                values.forEach((value) -> request.addHeader(name, value)));
+        consumeMultimap(headers, request::addHeader);
+    }
+
+    private <T, U> void consumeMultimap(Multimap<T, U> multimap, BiConsumer<T, U> consumer) {
+        multimap.asMap().forEach((name, values) ->
+            values.forEach((value) ->
+                consumer.accept(name, value)));
     }
 
     private void contributeRequestBody(AsyncHttpClient.BoundRequestBuilder request, InputStream requestBody) {
