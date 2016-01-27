@@ -1,16 +1,30 @@
-# HTTP client wrapper
+# HTTP 1.1 client wrapper
 
-Whether it's Jersey, Apache HttpClient 3.x or 4, Ning or any of the *n+1* HTTP clients already available for the JVM,
-they all share the following two traits:
+`io.induct.http` is a modular HTTP client wrapper which adds an unified API for _any_ actual HTTP client with
+testability and DI/IoC in mind.
 
- 1. They are all very powerful and provide all the bells and whistles one could ever need for HTTP client connectivity
- 2. Almost none of them provide a good baseline abstraction for both easy usage and mocking of said library
+## Quickstart
 
-While an argument exists that HTTP client should be hidden behind a
-[Gateway](http://martinfowler.com/eaaCatalog/gateway.html) and used as is I have through experience found that being
-able to hotswap HTTP implementation itself has allowed me to reuse integration tests as system tests while still using
-the actual Gateway object. I have found this immensely valuable as this proves the Gateway object behaves correctly with
-the rest of the code base while keeping especially the tests snappy.
+### Prerequisites
+
+#### 1. Understand HTTP wrapper's modular design
+
+HTTP Wrapper is extremely modularized to allow for its easy inclusion in any project, both new and on-going. These
+modules are referenced elsewhere in the docs so it is good to understand at this point what each module _type_ means:
+
+ - *core* module contains minimal set of dependencies for the wrapper itself and all utility classes etc.
+ - *builders* module contains _request_ wrapper and related builder utility classes
+ - *provider* modules are the actual wrapper implementations
+ - *ioc* modules contain readymade configurations for dependency injection libraries and frameworks
+
+### Setup
+
+ 1. Select modules which provide implementations you need
+ 2. Add the modules as dependencies. All modules are available through Maven Central.
+
+## Further reading
+
+ - [docs/design.md] explains in more detail why this wrapper even exists
 
 ## Basic use
 
@@ -45,7 +59,15 @@ general there isn't a ton of builders nor other classes involved in the request 
 As not all projects can include all transitive dependencies of various libraries this client is divided into highly
 granular modules to allow you, the user, to pick and choose what you want to and can use. The modules are
 
- - `http-core` The minimal dependency core library for the use of `HttpClient`
- - `http-ning` Ning implementation of the `HttpClient`
- - `http-builders` Builders and fluent utilities to ease the use of `HttpClient` and its facilities
- - `http-integration-tests` contains test suite for all implementations.
+## (Frequently) Asked Questions
+
+### WebSockets
+
+> Where's WebSocket support? I believe WebSockets are awesome and should also be supported by any self respecting HTTP
+> client!
+
+You and me both, buddy! WebSockets, however, are _not_ part of HTTP 1.1 itself. The initial handshake/upgrade is handled
+with HTTP 1.1, that's true, but after that the domain switches to something completely different. Practical reason for
+not supporting WebSockets in this library is that I have not had an use case for myself to actually abstract WebSockets
+in same way as HTTP clients. This may change of course but for time being we're going with just the traditional HTTP
+stuff.
