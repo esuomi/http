@@ -14,13 +14,13 @@ buildscript {
 
 apply from: file("${rootProject.projectDir}/cradle/root.gradle")
 
+group = 'io.induct.http'
+version = '0.3.0'
+
 subprojects {
     apply from: file("${rootProject.projectDir}/cradle/library.gradle")
     apply from: file("${rootProject.projectDir}/cradle/publishing.gradle")
 
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
-
-    group = 'io.induct.http'
-    version = '0.2.0'
 }
