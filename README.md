@@ -1,7 +1,11 @@
 # HTTP 1.1 client wrapper
 
+## Overview
+
 `io.induct.http` is a modular HTTP client wrapper which adds an unified API for _any_ actual HTTP client with
 testability and DI/IoC in mind.
+
+------
 
 ## Quickstart
 
@@ -22,14 +26,10 @@ modules are referenced elsewhere in the docs so it is good to understand at this
  1. Select modules which provide implementations you need
  2. Add the modules as dependencies. All modules are available through Maven Central.
 
-## Further reading
+## Usage
 
- - Read about the [design](docs/design.md) of this wrapper
-
-## Basic use
-
-The meat of this wrapper is the `HttpClient` interface which provides the commonly used HTTP 1.1 methods as standard
-Java methods. Going line by line below is the most idiomatic use for this wrapper:
+The wrapper provides a Java API for all HTTP methods through [`HttpClient`](http-core/src/main/java/io/induct/http/HttpClient)
+interface. The wrapper does not do any hidden header modifications, parameter escapings etc.
 
 ```java
 // Instantiate any implementation. The instance is reusable.
@@ -50,14 +50,10 @@ try (Response response = httpClient.get("http://www.example.com", params, header
 }
 ```
 
-As you can see, no magic is involved. Headers aren't automatically set, parameters are not automatically converted from
-various object types to Strings *(you don't need to encode them though - implementations take care of that)* and in
-general there isn't a ton of builders nor other classes involved in the request itself.
+## Further reading
 
-## Modules
-
-As not all projects can include all transitive dependencies of various libraries this client is divided into highly
-granular modules to allow you, the user, to pick and choose what you want to and can use. The modules are
+ - [RFC 2616: Hypertext transfer protocol HTTP/1.1](https://tools.ietf.org/html/rfc2616)
+ - about the [design](docs/design.md) of this wrapper
 
 ## (Frequently) Asked Questions
 
