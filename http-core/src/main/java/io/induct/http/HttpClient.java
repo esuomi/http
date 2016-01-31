@@ -26,7 +26,7 @@ import java.util.Optional;
  *
  * @since 15.2.2015
  */
-public interface HttpClient {
+public interface HttpClient extends AutoCloseable {
 
     /**
      * Perform HTTP OPTIONS call.

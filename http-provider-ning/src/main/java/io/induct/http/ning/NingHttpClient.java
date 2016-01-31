@@ -6,6 +6,7 @@ import io.induct.http.HttpClient;
 import io.induct.http.HttpException;
 import io.induct.http.Response;
 
+import javax.inject.Inject;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Optional;
@@ -18,8 +19,9 @@ public class NingHttpClient implements HttpClient, AutoCloseable {
 
     private final AsyncHttpClient client;
 
-    public NingHttpClient(AsyncHttpClient client) {
-        this.client = client;
+    @Inject
+    public NingHttpClient() {
+        this.client = new AsyncHttpClient();
     }
 
     @Override
