@@ -12,10 +12,10 @@ testability and DI/IoC in mind.
 HTTP Wrapper is extremely modularized to allow for its easy inclusion in any project, both new and on-going. These
 modules are referenced elsewhere in the docs so it is good to understand at this point what each module _type_ means:
 
- - *core* module contains minimal set of dependencies for the wrapper itself and all utility classes etc.
- - *builders* module contains _request_ wrapper and related builder utility classes
- - *provider* modules are the actual wrapper implementations
- - *ioc* modules contain readymade configurations for dependency injection libraries and frameworks
+ - *`core`* module contains minimal set of dependencies for the wrapper itself and all utility classes etc.
+ - *`builders`* module contains _request_ wrapper and related builder utility classes
+ - *`provider`* modules are the actual wrapper implementations
+ - *`ioc`* modules contain readymade configurations for dependency injection libraries and frameworks
 
 ### Setup
 
@@ -24,7 +24,7 @@ modules are referenced elsewhere in the docs so it is good to understand at this
 
 ## Further reading
 
- - [docs/design.md] explains in more detail why this wrapper even exists
+ - Read about the [design](docs/design.md) of this wrapper
 
 ## Basic use
 
